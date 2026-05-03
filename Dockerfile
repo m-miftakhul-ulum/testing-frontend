@@ -1,5 +1,5 @@
 # Stage 1: Build React App
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -14,9 +14,8 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build app
-# RUN npm run build
-RUN --mount=type=cache,target=/root/.npm \
-    npm install --legacy-peer-deps
+RUN npm run build
+
 
 # Stage 2: Serve pakai Nginx
 FROM nginx:alpine
@@ -25,7 +24,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy hasil build ke nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/.next /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
